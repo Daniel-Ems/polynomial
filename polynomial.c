@@ -81,6 +81,75 @@ polynomial *poly_add(polynomial *a, polynomial *b)
 			cb =cb->next;
 		}
 	}
+	remove_zeros(&front);
+	return front;
+}
+
+polynomial *poly_sub(polynomial *a, polynomial *b)
+{
+	struct term *ca = a;
+	struct term *cb = b;
+	polynomial *sub, *front; 
+
+	if(ca->exp > cb->exp)
+	{
+		sub = term_create(ca->coeff, ca->exp);
+		ca = ca->next;
+	}
+	else if(ca->exp < cb->exp)
+	{
+		sub = term_create(cb->coeff, cb->exp);
+		cb = cb->next;
+	}
+	else
+	{	
+		sub = term_create(ca->coeff-cb->coeff, ca->exp);
+		ca=ca->next;
+		cb =cb->next;
+			
+	}
+	front = sub;
+	while(ca && cb)
+	{
+
+		if(ca->exp > cb->exp)
+		{
+			sub->next = term_create(ca->coeff, ca->exp);
+			ca = ca->next;
+		
+		}
+		else if(ca->exp < cb->exp)
+		{
+			sub->next = term_create(cb->coeff, cb->exp);
+			cb = cb->next;
+		}
+		else
+		{	
+			sub->next = term_create(ca->coeff-cb->coeff, ca->exp);
+			ca=ca->next;
+			cb=cb->next;	
+		
+		}
+		sub = sub->next;
+	}
+	
+	if(ca != NULL)
+	{
+		while(ca)
+		{
+			sub->next =term_create(ca->coeff, ca->exp);
+			ca =ca->next;
+		}
+	}
+	else
+	{
+		while(cb)
+		{
+			sub->next =term_create(cb->coeff, cb->exp);
+			cb =cb->next;
+		}
+	}
+	remove_zeros(&front);
 	return front;
 }
 	
@@ -180,12 +249,19 @@ char *poly_to_string(polynomial *p)
 	return string;
 }
 
-
-void remove_zeros(polynomial *poly)
+// needs to handle removing a zero at the beginning of the linked list
+void remove_zeros(polynomial **poly)
 {
 	struct term *cursor, *previous;
-	cursor = poly;
+	cursor = *poly;
 	previous = cursor;
+	if(cursor->coeff == 0)
+	{
+		cursor = cursor->next;
+		free(previous);
+		previous = cursor;
+		*poly = cursor;
+	}
 	while(cursor)
 	{
 		if(cursor->coeff == 0)
@@ -199,6 +275,7 @@ void remove_zeros(polynomial *poly)
 			cursor = cursor->next;
 		}
 	}
+	//cursor = poly;
 }
 
 void Simplify_poly(polynomial *a)
@@ -223,7 +300,7 @@ void Simplify_poly(polynomial *a)
 			cursor = cursor->next;
 		}
 	}
-	remove_zeros(a);
+	remove_zeros(&a);
 }
 			
 //lynomial *poly_add(polynomial *a, polynomial *b)
@@ -245,8 +322,8 @@ void Simplify_poly(polynomial *a)
 int main()
 {
 
-struct term *front= term_create(-1, 5);
-front->next = term_create(5, 4);
+struct term *front= term_create(3, 5);
+front->next = term_create(2, 4);
 front->next->next = term_create(3, 3);
 front->next->next->next=term_create(-3,2);
 polynomial *poly = front;
@@ -258,8 +335,8 @@ printf("%s\n", string);
 poly_print(poly);
 puts(" ");
 
-struct term *second = term_create(1,5);
-second->next = term_create(2,4);
+struct term *second = term_create(-3,5);
+second->next = term_create(-2,4);
 second->next->next=term_create(-2,3);
 polynomial *polyB = second;
 poly_print(polyB);
@@ -270,8 +347,11 @@ printf("%s\n",stringB);
 puts(" ");
 
 polynomial *Addition = poly_add(poly, polyB);
+char *addstring = poly_to_string(Addition);
+printf("%s\n", addstring);
 poly_print(Addition);
 
+free(addstring);
 poly_destroy(Addition);
 free(stringB);
 poly_destroy(polyB);
