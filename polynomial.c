@@ -65,7 +65,7 @@ polynomial *poly_add(polynomial *a, polynomial *b)
 		add = add->next;
 	}
 	
-	if(ca == NULL)
+	if(ca != NULL)
 	{
 		while(ca)
 		{
