@@ -16,6 +16,74 @@ struct term *term_create(int coeff, int exp)
 	return node;
 }
 
+
+polynomial *poly_add(polynomial *a, polynomial *b)
+{
+	struct term *ca = a;
+	struct term *cb = b;
+	polynomial *add, *front; 
+
+	if(ca->exp > cb->exp)
+	{
+		add = term_create(ca->coeff, ca->exp);
+		ca = ca->next;
+	}
+	else if(ca->exp < cb->exp)
+	{
+		add = term_create(cb->coeff, cb->exp);
+		cb = cb->next;
+	}
+	else
+	{	
+		add = term_create(ca->coeff+cb->coeff, ca->exp);
+		ca=ca->next;
+		cb =cb->next;
+			
+	}
+	front = add;
+	while(ca && cb)
+	{
+
+		if(ca->exp > cb->exp)
+		{
+			add->next = term_create(ca->coeff, ca->exp);
+			ca = ca->next;
+		
+		}
+		else if(ca->exp < cb->exp)
+		{
+			add->next = term_create(cb->coeff, cb->exp);
+			cb = cb->next;
+		}
+		else
+		{	
+			add->next = term_create(ca->coeff+cb->coeff, ca->exp);
+			ca=ca->next;
+			cb=cb->next;	
+		
+		}
+		add = add->next;
+	}
+	
+	if(ca == NULL)
+	{
+		while(ca)
+		{
+			add->next =term_create(ca->coeff, ca->exp);
+			ca =ca->next;
+		}
+	}
+	else
+	{
+		while(cb)
+		{
+			add->next =term_create(cb->coeff, cb->exp);
+			cb =cb->next;
+		}
+	}
+	return front;
+}
+	
 void poly_destroy(polynomial *eqn)
 {
 	while(eqn) {
@@ -158,9 +226,10 @@ void Simplify_poly(polynomial *a)
 	remove_zeros(a);
 }
 			
-//polynomial *poly_add(const polynomial *a, const polynomial *b)
+//lynomial *poly_add(polynomial *a, polynomial *b)
 //Returns a newly-malloced polynomial that is the sum of the two arguments
- 
+
+	
 //polynomial *poly_sub(const polynomial *a, const polynomial *b);
 //Returns a newly-malloced polynomial that is the difference of the two arguments
 
@@ -177,8 +246,8 @@ int main()
 {
 
 struct term *front= term_create(-1, 5);
-front->next = term_create(5, 5);
-front->next->next = term_create(3, 2);
+front->next = term_create(5, 4);
+front->next->next = term_create(3, 3);
 front->next->next->next=term_create(-3,2);
 polynomial *poly = front;
 poly_print(poly);
@@ -189,8 +258,8 @@ printf("%s\n", string);
 poly_print(poly);
 puts(" ");
 
-struct term *second = term_create(1,4);
-second->next = term_create(2,3);
+struct term *second = term_create(1,5);
+second->next = term_create(2,4);
 second->next->next=term_create(-2,3);
 polynomial *polyB = second;
 poly_print(polyB);
@@ -200,7 +269,10 @@ char *stringB = poly_to_string(polyB);
 printf("%s\n",stringB);
 puts(" ");
 
+polynomial *Addition = poly_add(poly, polyB);
+poly_print(Addition);
 
+poly_destroy(Addition);
 free(stringB);
 poly_destroy(polyB);
 free(string);
