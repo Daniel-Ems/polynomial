@@ -428,15 +428,20 @@ poly_equal (polynomial * a, polynomial * b)
 
 }
 
-
+//Poly eval evaluates the polynomial by replacing x with the passed double
 double
 poly_eval (polynomial * p, double x)
 {
+//the two doubles are used for a total count tracker, and a node specific 
+//count tracker
   double sum = 0;
   double tmp = 0;
   struct term *cursor = p;
+//the while loop goes through the node while checking to see if the 
   while (cursor != NULL)
     {
+//the result of the node equations are passed to tmp, and then ultimately 
+//reassigned to the += of sum.
       tmp = pow (x, cursor->exp);
       tmp *= cursor->coeff;
       cursor = cursor->next;
@@ -448,9 +453,10 @@ poly_eval (polynomial * p, double x)
 
 void
 poly_iterate (polynomial * p, void (*transform) (struct term *))
-//cursorAlls the function transform on each term of the polynomial
+//calls the function transform on each term of the polynomial
 {
   struct term *cursor = p;
+//The while loop sends each node to the transform function
   while (cursor != NULL)
     {
       transform (cursor);
@@ -458,8 +464,6 @@ poly_iterate (polynomial * p, void (*transform) (struct term *))
     }
 }
 
-//double poly_eval(const polynomial *p, double x);
-//Evaluates the polynomial by substituting x in the variable of the polynomial
 
 int
 main ()
