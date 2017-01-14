@@ -6,6 +6,7 @@
 
 #include "polynomial.h"
 
+//Only creates a single node, and then points to null
 struct term *
 term_create (int coeff, int exp)
 {
@@ -20,16 +21,28 @@ term_create (int coeff, int exp)
   return node;
 }
 
-
+//This will add polynomial a, and polynomial b
 polynomial *
 poly_add (polynomial * a, polynomial * b)
 {
+//CursorA and cursorB act as handles on the nodes so you can traverse
+//the polynomial
   struct term *cursorA = a;
   struct term *cursorB = b;
+
+//The polynomial's add and front will be used to have a handle on the new
+//polynomial
   polynomial *add, *front;
 
+//This inital if/if else/else statement is used to identify and initiate
+//the first node of the new polynomial so that other nodes can be added
+//to it to create a polynomial
+
+//The statements will find the larger of the two nodes, or if they are equal
   if (cursorA->exp > cursorB->exp)
     {
+//A new node will then be created and the appropriate handle will be moved
+//accordingly
       add = term_create (cursorA->coeff, cursorA->exp);
       cursorA = cursorA->next;
     }
@@ -45,7 +58,13 @@ poly_add (polynomial * a, polynomial * b)
       cursorB = cursorB->next;
 
     }
+
+//the polynomial handle is then set to the new node to identify and get a handle
+//on the beginning of the newly linked list
   front = add;
+
+//The while statement will perform the same operations as the above if statement
+//However, this can be looped now that there is a handle on the first node
   while (cursorA && cursorB)
     {
 
@@ -71,6 +90,10 @@ poly_add (polynomial * a, polynomial * b)
       add = add->next;
     }
 
+//The following if/else statments are in place to handle the case that the two 
+//polynomials are not of equal length. If this is the case, then the longer of 
+//the two lists will be identified and will undergo the same operations 
+//accordingly
   if (cursorA != NULL)
     {
       while (cursorA)
@@ -87,19 +110,36 @@ poly_add (polynomial * a, polynomial * b)
 	  cursorB = cursorB->next;
 	}
     }
+
+//the remove zero's function will remove any zero's in the case that a coeff
+//is 0'd out due to the addition. i.e. -3 +3.
   remove_zeros (&front);
+
+//finally the new polynomial is returned.
   return front;
 }
 
+
+//This function will act similarly to poly_add. However, it will subtract.
 polynomial *
 poly_sub (polynomial * a, polynomial * b)
 {
+
+//CursorA and cursorB are again being used to maintain a handle on the 
+//polynomials.
   struct term *cursorA = a;
   struct term *cursorB = b;
+
+//polynomials sub and front will be used to maintain a handle on the new 
+//polynomial
   polynomial *sub, *front;
 
+//The following if/if else/else will be used to identify the first node
+//of the polynomial in order to get a handle on the new Polynomial
   if (cursorA->exp > cursorB->exp)
     {
+//A new node will be created from the appropriate polynomial, and the
+//appropriate handle will be moved accordingly.
       sub = term_create (cursorA->coeff, cursorA->exp);
       cursorA = cursorA->next;
     }
@@ -115,7 +155,13 @@ poly_sub (polynomial * a, polynomial * b)
       cursorB = cursorB->next;
 
     }
+
+//the first node of the new polynomial will be assigned to it's front
   front = sub;
+
+//the while loop will check for either cursor to = null, and while they do not
+//it will perform the same functions as perform, looping through the list.
+//this is only possible because we already have a handle on the new polynomial
   while (cursorA && cursorB)
     {
 
@@ -141,6 +187,9 @@ poly_sub (polynomial * a, polynomial * b)
       sub = sub->next;
     }
 
+//The follwoing if/else statments are used in the case the polynomials being 
+//subtracted are not of equal length. This will assign the remainder of the 
+//longer to the rest of the new polynomial. 
   if (cursorA != NULL)
     {
       while (cursorA)
@@ -157,10 +206,13 @@ poly_sub (polynomial * a, polynomial * b)
 	  cursorB = cursorB->next;
 	}
     }
+
+//this function will remove any nodes with a coeff of 0
   remove_zeros (&front);
   return front;
 }
 
+//This will destroy and free all nodes of a polynomial
 void
 poly_destroy (polynomial * eqn)
 {
@@ -172,8 +224,9 @@ poly_destroy (polynomial * eqn)
     }
 }
 
+//this prints the polynomial
 void
-poly_print (const polynomial * eqn)
+poly_print (polynomial * eqn)
 {
   if (!eqn)
     {
@@ -181,6 +234,7 @@ poly_print (const polynomial * eqn)
     }
   if (eqn->coeff)
     {
+//The print statement uses a ternary to check for + or negative coeff.
       printf ("%c%d", eqn->coeff > 0 ? '+' : '\0', eqn->coeff);
       if (eqn->exp > 1)
 	{
@@ -222,7 +276,7 @@ poly_to_string (polynomial * p)
       /* Think about possibly moving this to the bottom? */
       cursor = cursor->next;
 
-      //There are only four possibilities for C, which cursorAn be simplified
+      //There are only four possibilities for C, which can be simplified
       //in two if statements. >= && <=
       if (c >= 1)
 	{
@@ -254,27 +308,32 @@ poly_to_string (polynomial * p)
 	    {
 	      count +=
 		snprintf (tmp, 64, c == -1 ? "%dX^%d " : "%dX^%d ", c, e);
-	      //printf("%d, %d\n", c, count);
+
 	    }
 	  else
 	    {
 	      count += snprintf (tmp, 64, c == -1 ? "%d " : "%d ", c);
 	    }
 	}
+
+//The results of tmp are strncatted to string which will ultimately be 
+//returned. 
       strncat (string, tmp, 256 - count);
-      //cursor = cursor->next;
+
     }
   free (tmp);
   return string;
 }
 
-// needs to handle removing a zero at the beginning of the linked list
+//This removes any node that contains a 0 coefficient
 void
 remove_zeros (polynomial ** poly)
 {
   struct term *cursor, *previous;
   cursor = *poly;
   previous = cursor;
+//The first while loop is used to check if the first node, and any 
+//immediately consecutive nodes have coeffs that are 0
   while (cursor->coeff == 0)
     {
       cursor = cursor->next;
@@ -283,6 +342,8 @@ remove_zeros (polynomial ** poly)
       previous = cursor;
 
     }
+//The second while loop is used to remove any coeff of 0 not at the start of the 
+//polynomial
   while (cursor)
     {
       if (cursor->coeff == 0)
@@ -300,6 +361,7 @@ remove_zeros (polynomial ** poly)
   //cursor = poly;
 }
 
+//Simplify poly is used to add any coefficient's with the same exponent
 void
 Simplify_poly (polynomial * a)
 {
@@ -308,20 +370,29 @@ Simplify_poly (polynomial * a)
   previous = cursor;
   cursor = cursor->next;
 
+//The while loop will loop until it equals null, checking if any consecutive 
+//nodes have the same exponent.
   while (cursor)
     {
       if (previous->exp == cursor->exp)
 	{
+//if consecutive nodes share exponents, the coeff are added to the first node
+//then the second is free;
 	  previous->coeff += cursor->coeff;
 	  previous->next = cursor->next;
 	  free (cursor);
 	  cursor = previous->next;
 	}
+//If consecutives nodes do not have matching exponents, then the cursor is 
+//moved forward one node.
       else
 	{
 	  previous = cursor;
 	  cursor = cursor->next;
 	}
+//after the polynomial has been fully traversed, it is passed to the remove_zero
+//function in order to remove any nodes that have a coeff of 0 due to the 
+//simplify function
     }
   remove_zeros (&a);
 }
