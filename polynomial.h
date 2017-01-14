@@ -18,4 +18,5 @@ void poly_print(const polynomial *eqn);
 void poly_destroy(polynomial *eqn);
 polynomial *poly_add(polynomial *a, polynomial *b);
 polynomial *poly_sub(polynomial *a, polynomial *b);
+bool poly_equal(polynomial *a, polynomial *b);
 
