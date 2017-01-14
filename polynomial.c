@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 #include "polynomial.h"
 
@@ -223,7 +224,7 @@ char *poly_to_string(polynomial *p)
 			}
 			else
 			{ 
-			count += snprintf(tmp, 64, c == 1 ? "+%d " : "%d ",c); 
+			count += snprintf(tmp, 64, c == 1 ? "+%d " : "+%d ",c); 
 			}
 		}
 		if(c <= -1)
@@ -304,15 +305,35 @@ void Simplify_poly(polynomial *a)
 	remove_zeros(&a);
 }
 			
-//lynomial *poly_add(polynomial *a, polynomial *b)
-//Returns a newly-malloced polynomial that is the sum of the two arguments
-
+bool poly_equal(polynomial *a, polynomial *b)
+{
+	struct term *ca = a;
+	struct term *cb = b;
+	if((ca->coeff == cb->coeff) && (ca->exp==cb->exp))
+	{
+		while(ca != NULL && cb != NULL)
+		{
+			if((ca->coeff == cb->coeff) && (ca->exp==cb->exp))
+			{
+				ca=ca->next;
+				cb=cb->next;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
 	
-//polynomial *poly_sub(const polynomial *a, const polynomial *b);
-//Returns a newly-malloced polynomial that is the difference of the two arguments
+	
+		
 
-//int poly_equal(const polynomial *a, const polynomial *b);
-//Returns 1 if the two arguments have the same terms; 0 otherwise.
 
 //void poly_iterate(polynomial *p, void (*transform)(struct term *));
 //Calls the function transform on each term of the polynomial
@@ -323,10 +344,10 @@ void Simplify_poly(polynomial *a)
 int main()
 {
 
-struct term *front= term_create(-2, 5);
-front->next = term_create(-2, 4);
-front->next->next = term_create(-2, 3);
-front->next->next->next=term_create(-5,2);
+struct term *front= term_create(2, 5);
+front->next = term_create(2, 4);
+front->next->next = term_create(2, 3);
+//front->next->next->next=term_create(-5,2);
 polynomial *poly = front;
 poly_print(poly);
 puts(" ");
@@ -336,9 +357,9 @@ printf("%s\n", string);
 poly_print(poly);
 puts(" ");
 
-struct term *second = term_create(-2,5);
-second->next = term_create(-2,4);
-second->next->next=term_create(2,3);
+struct term *second = term_create(2,5);
+second->next = term_create(2,4);
+second->next->next=term_create(2,0);
 polynomial *polyB = second;
 poly_print(polyB);
 puts(" ");
@@ -352,6 +373,14 @@ char *addstring = poly_to_string(Addition);
 printf("%s\n", addstring);
 poly_print(Addition);
 
+if(poly_equal(poly, polyB))
+{
+	printf("they are equal it works\n");
+}
+else
+{
+	printf("This doesn't work\n");
+}
 free(addstring);
 poly_destroy(Addition);
 free(stringB);
