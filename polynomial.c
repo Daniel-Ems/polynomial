@@ -255,12 +255,13 @@ void remove_zeros(polynomial **poly)
 	struct term *cursor, *previous;
 	cursor = *poly;
 	previous = cursor;
-	if(cursor->coeff == 0)
+	while(cursor->coeff == 0)
 	{
 		cursor = cursor->next;
+		*poly = cursor;
 		free(previous);
 		previous = cursor;
-		*poly = cursor;
+		
 	}
 	while(cursor)
 	{
@@ -322,10 +323,10 @@ void Simplify_poly(polynomial *a)
 int main()
 {
 
-struct term *front= term_create(3, 5);
-front->next = term_create(2, 4);
-front->next->next = term_create(3, 3);
-front->next->next->next=term_create(-3,2);
+struct term *front= term_create(-2, 5);
+front->next = term_create(-2, 4);
+front->next->next = term_create(-2, 3);
+front->next->next->next=term_create(-5,2);
 polynomial *poly = front;
 poly_print(poly);
 puts(" ");
@@ -335,9 +336,9 @@ printf("%s\n", string);
 poly_print(poly);
 puts(" ");
 
-struct term *second = term_create(-3,5);
+struct term *second = term_create(-2,5);
 second->next = term_create(-2,4);
-second->next->next=term_create(-2,3);
+second->next->next=term_create(2,3);
 polynomial *polyB = second;
 poly_print(polyB);
 puts(" ");
