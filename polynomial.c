@@ -340,6 +340,22 @@ void transform(struct term *b)
 	printf("exp %d\n", b->exp);
 	printf("sum = %lf\n", sum);
 }
+
+double poly_eval(polynomial *p, double x)
+{
+	double sum=0;
+	double tmp=0;
+	struct term *cursor = p;
+	while(cursor != NULL)
+	{
+		tmp = pow(x, cursor->exp);
+		tmp *= cursor->coeff;
+		cursor = cursor->next;
+		sum+=tmp;
+	}
+	return sum;
+}
+
 	
 void poly_iterate(polynomial *p, void (*transform)(struct term *))
 //Calls the function transform on each term of the polynomial
@@ -356,36 +372,61 @@ void poly_iterate(polynomial *p, void (*transform)(struct term *))
 
 int main()
 {
-
+//make polynomial named poly
 struct term *front= term_create(2, 5);
 front->next = term_create(2, 4);
 front->next->next = term_create(2, 3);
-//front->next->next->next=term_create(-5,2);
+front->next->next->next=term_create(-5,2);
 polynomial *poly = front;
-poly_print(poly);
-puts(" ");
-Simplify_poly(poly);
-char *string = poly_to_string(poly);
-printf("%s\n", string);
+
+//print poly
 poly_print(poly);
 puts(" ");
 
+//simplify poly
+Simplify_poly(poly);
+
+//turn poly to string
+char *string = poly_to_string(poly);
+printf("%s\n", string);
+
+//make polynomial named polyB
 struct term *second = term_create(2,5);
 second->next = term_create(2,4);
 second->next->next=term_create(2,0);
 polynomial *polyB = second;
+
+//print polyB
 poly_print(polyB);
 puts(" ");
+
+//simpligy polyB
 Simplify_poly(polyB);
+
+//make polyB a string
 char *stringB = poly_to_string(polyB);
 printf("%s\n",stringB);
 puts(" ");
 
+//make new polynomial from the addition of polynomial a and b
 polynomial *Addition = poly_add(poly, polyB);
+
+//make a new polynomial from the subtraction of a and b
+polynomial *Subtraction = poly_add(poly,polyB);
+
+//turn subtraction into string
+char *substring = poly_to_string(Subtraction);
+printf("%s", substring);
+
+//turn the addition polynomial into a string
 char *addstring = poly_to_string(Addition);
 printf("%s\n", addstring);
+
+
 poly_print(Addition);
 
+
+//check and see if they are equal
 if(poly_equal(poly, polyB))
 {
 	printf("they are equal it works\n");
@@ -394,7 +435,14 @@ else
 {
 	printf("This doesn't work\n");
 }
-poly_iterate(front,transform);
+
+//send transform to poly_iterate;
+poly_iterate(polyB, transform);
+
+//evaluate the polynomial based on substituting x for a double
+double x = poly_eval(front,2.3);
+printf("%lf", x);
+
 free(addstring);
 poly_destroy(Addition);
 free(stringB);
