@@ -19,4 +19,6 @@ void poly_destroy(polynomial *eqn);
 polynomial *poly_add(polynomial *a, polynomial *b);
 polynomial *poly_sub(polynomial *a, polynomial *b);
 bool poly_equal(polynomial *a, polynomial *b);
-
+void poly_iterate(polynomial *p, void (*transform)(struct term *));
+void transform(struct term *b);
+double poly_eval(polynomial *p, double x);
