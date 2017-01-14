@@ -15,7 +15,7 @@ struct term *term_create (int coeff, int exp);
 void Simplify_poly (polynomial * a);
 void remove_zeros (polynomial ** poly);
 char *poly_to_string (polynomial * p);
-void poly_print (const polynomial * eqn);
+void poly_print (polynomial * eqn);
 void poly_destroy (polynomial * eqn);
 polynomial *poly_add (polynomial * a, polynomial * b);
 polynomial *poly_sub (polynomial * a, polynomial * b);
