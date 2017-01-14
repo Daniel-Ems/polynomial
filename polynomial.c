@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <math.h>
 
 #include "polynomial.h"
 
@@ -330,14 +331,26 @@ bool poly_equal(polynomial *a, polynomial *b)
 		return false;
 	}
 }
+void transform(struct term *b)
+{
+	double sum;
+	sum = pow(4.2,b->exp);
+	sum*= b->coeff;
+	printf("coeff %d\n", b->coeff);
+	printf("exp %d\n", b->exp);
+	printf("sum = %lf\n", sum);
+}
 	
-	
-		
-
-
-//void poly_iterate(polynomial *p, void (*transform)(struct term *));
+void poly_iterate(polynomial *p, void (*transform)(struct term *))
 //Calls the function transform on each term of the polynomial
-
+{
+	struct term *cursor  = p;
+	while(cursor != NULL)
+	{
+		transform(cursor);
+		cursor = cursor->next;
+	}
+}
 //double poly_eval(const polynomial *p, double x);
 //Evaluates the polynomial by substituting x in the variable of the polynomial
 
@@ -381,6 +394,7 @@ else
 {
 	printf("This doesn't work\n");
 }
+poly_iterate(front,transform);
 free(addstring);
 poly_destroy(Addition);
 free(stringB);
